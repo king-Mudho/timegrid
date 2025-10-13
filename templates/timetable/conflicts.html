@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Conflict Report - Melsoft TimeGrid{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-exclamation-triangle"></i> Conflict Report</h1>
+        <p class="text-muted">Constraint violations detected by the solver</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'generate_timetable' %}" class="btn btn-primary">
+            <i class="bi bi-arrow-clockwise"></i> Retry Generation
+        </a>
+    </div>
+</div>
+
+{% if conflicts %}
+    <div class="row">
+        {% for conflict in conflicts %}
+            <div class="col-12 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                {% if conflict.severity == 'error' %}
+                                    <i class="bi bi-x-circle text-danger" style="font-size: 2rem;"></i>
+                                {% elif conflict.severity == 'warning' %}
+                                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                                {% else %}
+                                    <i class="bi bi-info-circle text-info" style="font-size: 2rem;"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-2">
+                                    <span class="badge bg-{{ conflict.severity }}">
+                                        {{ conflict.get_severity_display }}
+                                    </span>
+                                    {{ conflict.message }}
+                                </h5>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> {{ conflict.generated_at|date:"Y-m-d H:i" }}
+                                </small>
+
+                                {% if conflict.details %}
+                                    <div class="mt-3">
+                                        <strong>Details:</strong>
+                                        <pre class="bg-light p-3 rounded mt-2"><code>{{ conflict.details|pprint }}</code></pre>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title"><i class="bi bi-lightbulb"></i> Suggestions</h5>
+            <ul class="mb-0">
+                <li>Check that all teachers are qualified for their assigned subjects</li>
+                <li>Verify teacher availability matches their required workload</li>
+                <li>Ensure sufficient rooms of each type are available</li>
+                <li>Check that room capacities can accommodate class sizes</li>
+                <li>Review teacher workload limits and weekly hours</li>
+                <li>Consider adjusting subject weekly periods if constraints are too tight</li>
+            </ul>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-success">
+        <i class="bi bi-check-circle"></i>
+        No conflicts detected! Your timetable constraints are satisfied.
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

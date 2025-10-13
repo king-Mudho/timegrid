@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Allocate Teachers - {{ classgroup.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="card-title mb-4">
+                    <i class="bi bi-person-plus"></i> Allocate Teachers to {{ classgroup.name }}
+                </h2>
+
+                <p class="text-muted mb-4">
+                    Assign a teacher to each subject for this class. This is required before generating the timetable.
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for subject in subjects %}
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <label class="form-label fw-bold">
+                                {{ subject.name }}
+                                <small class="text-muted">({{ subject.weekly_periods }} periods/week, {{ subject.get_subject_type_display }})</small>
+                            </label>
+
+                            <select name="teacher_for_subject_{{ subject.id }}" class="form-select" required>
+                                <option value="">-- Select Teacher --</option>
+                                {% for teacher in subject_teachers|get:subject.id %}
+                                    <option value="{{ teacher.id }}"
+                                            {% if existing_allocations|get:subject.id == teacher.id %}selected{% endif %}>
+                                        {{ teacher.name }} ({{ teacher.email }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                            {% if not subject_teachers|get:subject.id %}
+                                <small class="text-danger">
+                                    <i class="bi bi-exclamation-circle"></i> No qualified teachers available for this subject.
+                                </small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> Save Allocations
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Melsoft TimeGrid{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3">Dashboard</h1>
+        {% if settings %}
+            <p class="text-muted">{{ settings.school_name }} - {{ settings.academic_year }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_teachers }}</div>
+            <div class="stat-label">Teachers</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_classes }}</div>
+            <div class="stat-label">Classes</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_rooms }}</div>
+            <div class="stat-label">Rooms</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-number {% if conflicts > 0 %}text-danger{% endif %}">{{ conflicts }}</div>
+            <div class="stat-label">Conflicts</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-lightning-charge"></i> Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'generate_timetable' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-play-circle"></i> Generate Timetable
+                    </a>
+                    <a href="{% url 'master_timetable' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-table"></i> View Master Timetable
+                    </a>
+                    <a href="/admin/timetable/classgroup/" class="btn btn-outline-secondary">
+                        <i class="bi bi-plus-circle"></i> Add New Class
+                    </a>
+                    <a href="/admin/timetable/subject/" class="btn btn-outline-secondary">
+                        <i class="bi bi-book"></i> Manage Subjects
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-exclamation-triangle"></i> Recent Conflicts</h5>
+                {% if recent_conflicts %}
+                    <ul class="list-group list-group-flush">
+                        {% for conflict in recent_conflicts %}
+                            <li class="list-group-item px-0">
+                                <span class="badge bg-{{ conflict.severity }} me-2">{{ conflict.get_severity_display }}</span>
+                                {{ conflict.message }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'conflict_report' %}" class="btn btn-sm btn-outline-danger mt-3">
+                        View All Conflicts
+                    </a>
+                {% else %}
+                    <p class="text-muted">No conflicts detected!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-person-badge"></i> Teacher Workload</h5>
+                {% if teacher_workload %}
+                    {% for item in teacher_workload %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>{{ item.name }}</span>
+                                <span class="text-muted">{{ item.periods }}/{{ item.max }} periods</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                {% widthratio item.periods item.max 100 as percentage %}
+                                <div class="progress-bar {% if percentage > 90 %}bg-danger{% elif percentage > 70 %}bg-warning{% else %}bg-success{% endif %}"
+                                     style="width: {{ percentage }}%">
+                                    {{ percentage }}%
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No teacher workload data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-door-open"></i> Room Utilization</h5>
+                {% if room_utilization %}
+                    {% for item in room_utilization %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>{{ item.name }}</span>
+                                <span class="text-muted">{{ item.utilization }}%</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-info" style="width: {{ item.utilization }}%">
+                                    {{ item.utilization }}%
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No room utilization data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="command-shortcut">
+    <a href="{% url 'generate_timetable' %}" class="btn btn-primary btn-lg shadow-lg">
+        <i class="bi bi-lightning"></i>
+    </a>
+</div>
+{% endblock %}

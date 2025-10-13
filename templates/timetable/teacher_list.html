@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Teachers - Melsoft TimeGrid{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-person"></i> Teachers</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="/admin/timetable/teacher/add/" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Teacher
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    {% for teacher in teachers %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ teacher.name }}</h5>
+                    <p class="text-muted mb-3">{{ teacher.email }}</p>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Weekly Periods</small>
+                        <div class="progress" style="height: 20px;">
+                            {% widthratio teacher.period_count teacher.max_periods_week 100 as percentage %}
+                            <div class="progress-bar {% if percentage > 90 %}bg-danger{% elif percentage > 70 %}bg-warning{% else %}bg-success{% endif %}"
+                                 style="width: {{ percentage }}%">
+                                {{ teacher.period_count }}/{{ teacher.max_periods_week }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'teacher_detail' teacher.id %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-calendar3"></i> View Timetable
+                        </a>
+                        <a href="{% url 'export_with_id' 'pdf' 'teacher' teacher.id %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-file-pdf"></i> Export PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                No teachers found. <a href="/admin/timetable/teacher/add/">Add your first teacher.</a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

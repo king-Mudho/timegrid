@@ -1,0 +1,225 @@
+[
+  {
+    "model": "timetable.schoolsettings",
+    "pk": 1,
+    "fields": {
+      "school_name": "Greenwood High School",
+      "academic_year": "2024-2025",
+      "days_per_week": 5,
+      "lesson_start_time": "08:00:00",
+      "lesson_duration_min": 45,
+      "periods_before_break": 2,
+      "break_duration_min": 15,
+      "periods_after_break": 2,
+      "lunch_duration_min": 45
+    }
+  },
+  {
+    "model": "timetable.subject",
+    "pk": 1,
+    "fields": {
+      "name": "Mathematics",
+      "weekly_periods": 5,
+      "subject_type": "theory",
+      "difficulty": "difficult",
+      "requires_room_type": "classroom",
+      "requires_consecutive_periods": false
+    }
+  },
+  {
+    "model": "timetable.subject",
+    "pk": 2,
+    "fields": {
+      "name": "Physics",
+      "weekly_periods": 4,
+      "subject_type": "practical",
+      "difficulty": "difficult",
+      "requires_room_type": "lab",
+      "requires_consecutive_periods": true
+    }
+  },
+  {
+    "model": "timetable.subject",
+    "pk": 3,
+    "fields": {
+      "name": "Chemistry",
+      "weekly_periods": 4,
+      "subject_type": "practical",
+      "difficulty": "difficult",
+      "requires_room_type": "lab",
+      "requires_consecutive_periods": true
+    }
+  },
+  {
+    "model": "timetable.subject",
+    "pk": 4,
+    "fields": {
+      "name": "English",
+      "weekly_periods": 4,
+      "subject_type": "theory",
+      "difficulty": "fair",
+      "requires_room_type": "classroom",
+      "requires_consecutive_periods": false
+    }
+  },
+  {
+    "model": "timetable.subject",
+    "pk": 5,
+    "fields": {
+      "name": "Computer Science",
+      "weekly_periods": 3,
+      "subject_type": "practical",
+      "difficulty": "fair",
+      "requires_room_type": "computer_lab",
+      "requires_consecutive_periods": true
+    }
+  },
+  {
+    "model": "timetable.subject",
+    "pk": 6,
+    "fields": {
+      "name": "Physical Education",
+      "weekly_periods": 2,
+      "subject_type": "practical",
+      "difficulty": "easy",
+      "requires_room_type": "gym",
+      "requires_consecutive_periods": false
+    }
+  },
+  {
+    "model": "timetable.teacher",
+    "pk": 1,
+    "fields": {
+      "name": "Dr. Sarah Johnson",
+      "email": "s.johnson@greenwood.edu",
+      "max_periods_week": 25,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.teacher",
+    "pk": 2,
+    "fields": {
+      "name": "Prof. Michael Chen",
+      "email": "m.chen@greenwood.edu",
+      "max_periods_week": 25,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.teacher",
+    "pk": 3,
+    "fields": {
+      "name": "Mrs. Emily Davis",
+      "email": "e.davis@greenwood.edu",
+      "max_periods_week": 25,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.teacher",
+    "pk": 4,
+    "fields": {
+      "name": "Mr. David Wilson",
+      "email": "d.wilson@greenwood.edu",
+      "max_periods_week": 25,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.teacher",
+    "pk": 5,
+    "fields": {
+      "name": "Ms. Rachel Martinez",
+      "email": "r.martinez@greenwood.edu",
+      "max_periods_week": 25,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.teacher",
+    "pk": 6,
+    "fields": {
+      "name": "Coach James Brown",
+      "email": "j.brown@greenwood.edu",
+      "max_periods_week": 20,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.room",
+    "pk": 1,
+    "fields": {
+      "name": "Room 101",
+      "room_type": "classroom",
+      "capacity": 40,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.room",
+    "pk": 2,
+    "fields": {
+      "name": "Room 102",
+      "room_type": "classroom",
+      "capacity": 40,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.room",
+    "pk": 3,
+    "fields": {
+      "name": "Physics Lab",
+      "room_type": "lab",
+      "capacity": 30,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.room",
+    "pk": 4,
+    "fields": {
+      "name": "Chemistry Lab",
+      "room_type": "lab",
+      "capacity": 30,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.room",
+    "pk": 5,
+    "fields": {
+      "name": "Computer Lab A",
+      "room_type": "computer_lab",
+      "capacity": 35,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.room",
+    "pk": 6,
+    "fields": {
+      "name": "Gymnasium",
+      "room_type": "gym",
+      "capacity": 60,
+      "availability": {}
+    }
+  },
+  {
+    "model": "timetable.classgroup",
+    "pk": 1,
+    "fields": {
+      "name": "Grade 10A",
+      "student_count": 35
+    }
+  },
+  {
+    "model": "timetable.classgroup",
+    "pk": 2,
+    "fields": {
+      "name": "Grade 10B",
+      "student_count": 32
+    }
+  }
+]

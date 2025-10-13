@@ -1,0 +1,9 @@
+Django==5.0.1
+psycopg2-binary==2.9.10
+ortools==9.14.6206
+django-crispy-forms==2.3
+crispy-bootstrap5==2025.6
+openpyxl==3.1.2
+reportlab==4.0.9
+weasyprint==60.2
+python-dotenv==1.0.1

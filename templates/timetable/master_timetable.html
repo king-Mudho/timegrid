@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+/* l add this correction */
+{% load dict_extras %}
+
+
+{% block title %}Master Timetable - Melsoft TimeGrid{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-grid-3x3"></i> Master Timetable</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{% url 'export' 'pdf' 'master' %}" class="btn btn-outline-primary">
+                <i class="bi bi-file-pdf"></i> PDF
+            </a>
+            <a href="{% url 'export' 'excel' 'master' %}" class="btn btn-outline-success">
+                <i class="bi bi-file-excel"></i> Excel
+            </a>
+            <a href="{% url 'export' 'csv' 'master' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-filetype-csv"></i> CSV
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if days %}
+    {% for day_idx, day_slots in days.items %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ day_slots.0.get_day_index_display }}</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 150px;">Class</th>
+                                {% for ts in day_slots %}
+                                    <th class="text-center" style="min-width: 180px;">
+                                        <div>Period {{ ts.period_index|add:1 }}</div>
+                                        <small class="text-muted">{{ ts.start_time|time:"H:i" }} - {{ ts.end_time|time:"H:i" }}</small>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for classgroup in classes %}
+                                <tr>
+                                    <td class="fw-bold">
+                                        <a href="{% url 'class_detail' classgroup.id %}">{{ classgroup.name }}</a>
+                                    </td>
+                                    {% for ts in day_slots %}
+                                        <td class="timetable-cell" data-timeslot="{{ ts.id }}" data-class="{{ classgroup.id }}">
+                                            {% with entry=grid|get:classgroup.id|get:ts.id %}
+                                                {% if entry %}
+                                                    <div class="timetable-entry" data-entry-id="{{ entry.id }}" draggable="true">
+                                                        <strong>{{ entry.subject.name }}</strong><br>
+                                                        <small>{{ entry.teacher.name }}</small><br>
+                                                        <small><i class="bi bi-door-open"></i> {{ entry.room.name }}</small>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="text-center text-muted">-</div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        No timetable entries found. <a href="{% url 'generate_timetable' %}">Generate a timetable first.</a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timetable-entry {
+        cursor: move;
+        user-select: none;
+    }
+
+    .timetable-cell {
+        position: relative;
+    }
+
+    .drag-over {
+        background: #fef3c7 !important;
+        border: 2px dashed #f59e0b !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Drag and drop functionality
+let draggedEntry = null;
+
+document.querySelectorAll('.timetable-entry').forEach(entry => {
+    entry.addEventListener('dragstart', function(e) {
+        draggedEntry = this;
+        e.dataTransfer.effectAllowed = 'move';
+        this.style.opacity = '0.5';
+    });
+
+    entry.addEventListener('dragend', function(e) {
+        this.style.opacity = '1';
+        document.querySelectorAll('.drag-over').forEach(cell => {
+            cell.classList.remove('drag-over');
+        });
+    });
+});
+
+document.querySelectorAll('.timetable-cell').forEach(cell => {
+    cell.addEventListener('dragover', function(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        e.dataTransfer.dropEffect = 'move';
+        this.classList.add('drag-over');
+        return false;
+    });
+
+    cell.addEventListener('dragleave', function(e) {
+        this.classList.remove('drag-over');
+    });
+
+    cell.addEventListener('drop', function(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        this.classList.remove('drag-over');
+
+        if (draggedEntry) {
+            const entryId = draggedEntry.dataset.entryId;
+            const timeslotId = this.dataset.timeslot;
+
+            // Make AJAX request to update
+            $.ajax({
+                url: '{% url "update_entry" %}',
+                type: 'POST',
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: JSON.stringify({
+                    entry_id: entryId,
+                    timeslot_id: timeslotId
+                }),
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr) {
+                    const errors = xhr.responseJSON?.errors || [xhr.responseJSON?.error || 'Unknown error'];
+                    alert('Cannot move entry:\n' + errors.join('\n'));
+                }
+            });
+        }
+
+        return false;
+    });
+});
+</script>
+{% endblock %}

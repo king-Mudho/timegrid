@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Melsoft TimeGrid{% endblock %}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background-color: #f8fafc;
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #1e40af 100%
+        );
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.4rem;
+      }
+
+      .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+      }
+
+      .btn-primary:hover {
+        background: #1e40af;
+      }
+
+      .timetable-cell {
+        min-height: 80px;
+        border: 1px solid #e2e8f0;
+        padding: 8px;
+        font-size: 0.85rem;
+        background: white;
+        transition: background 0.2s;
+      }
+
+      .timetable-cell:hover {
+        background: #f1f5f9;
+      }
+
+      .timetable-entry {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        cursor: move;
+        margin-bottom: 4px;
+      }
+
+      .timetable-entry small {
+        opacity: 0.9;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .stat-label {
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .command-shortcut {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+      }
+
+      .conflict-badge {
+        background: #ef4444;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+          <i class="bi bi-calendar3"></i> TimeGrid Lite
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'dashboard' %}"
+                ><i class="bi bi-house"></i> Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'master_timetable' %}"
+                ><i class="bi bi-grid-3x3"></i> Master</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'teacher_list' %}"
+                ><i class="bi bi-person"></i> Teachers</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'class_list' %}"
+                ><i class="bi bi-people"></i> Classes</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'room_list' %}"
+                ><i class="bi bi-door-open"></i> Rooms</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/"
+                ><i class="bi bi-gear"></i> Admin</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      {% if messages %} {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

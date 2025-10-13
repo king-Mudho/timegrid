@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% load dict_extras %}
+
+{% block title %}{{ room.name }} - Timetable{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-door-open"></i> {{ room.name }}</h1>
+        <p class="text-muted">{{ room.get_room_type_display }} | Capacity: {{ room.capacity }} | Utilization: {{ utilization }}%</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{% url 'export_with_id' 'pdf' 'room' room.id %}" class="btn btn-outline-primary">
+                <i class="bi bi-file-pdf"></i> PDF
+            </a>
+            <a href="{% url 'export_with_id' 'excel' 'room' room.id %}" class="btn btn-outline-success">
+                <i class="bi bi-file-excel"></i> Excel
+            </a>
+            <a href="{% url 'export_with_id' 'csv' 'room' room.id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-filetype-csv"></i> CSV
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if days %}
+    {% for day_idx, day_slots in days.items %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ day_slots.0.get_day_index_display }}</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                {% for ts in day_slots %}
+                                    <th class="text-center" style="min-width: 180px;">
+                                        <div>Period {{ ts.period_index|add:1 }}</div>
+                                        <small class="text-muted">{{ ts.start_time|time:"H:i" }} - {{ ts.end_time|time:"H:i" }}</small>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for ts in day_slots %}
+                                    <td class="timetable-cell">
+                                        {% with entry=grid|get:ts.id %}
+                                            {% if entry %}
+                                                <div class="timetable-entry">
+                                                    <strong>{{ entry.subject.name }}</strong><br>
+                                                    <small><i class="bi bi-person"></i> {{ entry.teacher.name }}</small><br>
+                                                    <small><i class="bi bi-people"></i> {{ entry.classgroup.name }}</small>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-center text-muted">Available</div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        No timetable entries found for this room.
+    </div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{% url 'room_list' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Rooms
+    </a>
+</div>
+{% endblock %}
