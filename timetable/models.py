@@ -1,5 +1,6 @@
 """
 Django models for Melsoft TimeGrid timetable application.
+(Updated: normalized availability handling and small safety improvements.)
 """
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -114,18 +115,37 @@ class Teacher(models.Model):
         return self.name
 
     def get_availability_dict(self):
-        """Parse availability JSON safely."""
-        if isinstance(self.availability, str):
+        """Parse availability JSON safely and normalize keys to strings for consistent lookup."""
+        # Accept both dict or JSON string, then ensure nested keys are strings
+        raw = self.availability
+        if isinstance(raw, str):
             try:
-                return json.loads(self.availability)
+                raw = json.loads(raw)
             except json.JSONDecodeError:
-                return {}
-        return self.availability or {}
+                raw = {}
+        data = raw or {}
+        normalized = {}
+        for k, v in data.items():
+            sk = str(k)
+            if isinstance(v, dict):
+                nested = {}
+                for pk, pv in v.items():
+                    nested[str(pk)] = bool(pv)
+                normalized[sk] = nested
+            else:
+                # If availability uses a flat true/false, ignore (not expected)
+                normalized[sk] = v
+        return normalized
 
     def is_available(self, day_index, period_index):
-        """Check if teacher is available at given slot."""
+        """Check if teacher is available at given slot. Defaults to True when unavailable data missing."""
         avail = self.get_availability_dict()
-        return avail.get(str(day_index), {}).get(str(period_index), True)
+        # try both string and int keys; default to True (available) if not specified
+        day = avail.get(str(day_index), avail.get(day_index, {}))
+        if not isinstance(day, dict):
+            # if stored as something else, assume available
+            return True
+        return day.get(str(period_index), day.get(period_index, True))
 
 
 class ClassGroup(models.Model):
@@ -173,18 +193,33 @@ class Room(models.Model):
         return f"{self.name} ({self.room_type})"
 
     def get_availability_dict(self):
-        """Parse availability JSON safely."""
-        if isinstance(self.availability, str):
+        """Parse availability JSON safely and normalize keys to strings for consistent lookup."""
+        raw = self.availability
+        if isinstance(raw, str):
             try:
-                return json.loads(self.availability)
+                raw = json.loads(raw)
             except json.JSONDecodeError:
-                return {}
-        return self.availability or {}
+                raw = {}
+        data = raw or {}
+        normalized = {}
+        for k, v in data.items():
+            sk = str(k)
+            if isinstance(v, dict):
+                nested = {}
+                for pk, pv in v.items():
+                    nested[str(pk)] = bool(pv)
+                normalized[sk] = nested
+            else:
+                normalized[sk] = v
+        return normalized
 
     def is_available(self, day_index, period_index):
-        """Check if room is available at given slot."""
+        """Check if room is available at given slot. Defaults to True when unspecified."""
         avail = self.get_availability_dict()
-        return avail.get(str(day_index), {}).get(str(period_index), True)
+        day = avail.get(str(day_index), avail.get(day_index, {}))
+        if not isinstance(day, dict):
+            return True
+        return day.get(str(period_index), day.get(period_index, True))
 
 
 class TimeSlot(models.Model):
