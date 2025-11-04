@@ -381,3 +381,11 @@ def export_view(request, format='pdf', view_type='master', object_id=None):
         return export_to_csv(view_type, object_id)
     else:
         return HttpResponse('Invalid format', status=400)
+
+
+
+
+
+
+
+

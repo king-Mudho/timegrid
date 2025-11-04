@@ -19,4 +19,7 @@ urlpatterns = [
     path('api/update-entry/', views.update_entry, name='update_entry'),
     path('export/<str:format>/<str:view_type>/', views.export_view, name='export'),
     path('export/<str:format>/<str:view_type>/<int:object_id>/', views.export_view, name='export_with_id'),
+   
+
 ]
+

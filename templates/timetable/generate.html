@@ -1,85 +1,101 @@
-{% extends 'base.html' %}
-
-{% block title %}Generate Timetable - Melsoft TimeGrid{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Generate Timetable - Melsoft
+TimeGrid{% endblock %} {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card">
-            <div class="card-body p-5">
-                <h2 class="card-title text-center mb-4">
-                    <i class="bi bi-cpu"></i> Generate Timetable
-                </h2>
+  <div class="col-md-8 col-lg-6">
+    <div class="card">
+      <div class="card-body p-5">
+        <h2 class="card-title text-center mb-4">
+          <i class="bi bi-cpu"></i> Generate Timetable
+        </h2>
 
-                <div class="alert alert-info mb-4">
-                    <i class="bi bi-info-circle"></i>
-                    <strong>OR-Tools Constraint Solver</strong><br>
-                    This will use Google OR-Tools to generate a conflict-free timetable based on your constraints.
-                </div>
-
-                <div class="mb-4">
-                    <h5>Prerequisites</h5>
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Teacher-Subject Allocations
-                            <span class="badge bg-primary rounded-pill">{{ total_allocations }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Available Time Slots
-                            <span class="badge bg-primary rounded-pill">{{ total_timeslots }}</span>
-                        </li>
-                    </ul>
-                </div>
-
-                {% if total_allocations == 0 %}
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        No teacher-subject allocations found. Please allocate teachers to classes first.
-                    </div>
-                    <a href="/admin/timetable/classgroup/" class="btn btn-secondary w-100">
-                        Go to Class Management
-                    </a>
-                {% else %}
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="time_limit" class="form-label">Solver Time Limit (seconds)</label>
-                            <input type="number" class="form-control" id="time_limit" name="time_limit"
-                                   value="60" min="10" max="300">
-                            <small class="form-text text-muted">
-                                Longer time limits may find better solutions but take more time.
-                            </small>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="bi bi-play-circle"></i> Generate Timetable
-                        </button>
-                    </form>
-
-                    <div class="mt-4 text-center">
-                        <small class="text-muted">
-                            This process may take several minutes depending on complexity.
-                        </small>
-                    </div>
-                {% endif %}
-            </div>
+        <div class="alert alert-info mb-4">
+          <i class="bi bi-info-circle"></i>
+          <strong>OR-Tools Constraint Solver</strong><br />
+          This will use Google OR-Tools to generate a conflict-free timetable
+          based on your constraints.
         </div>
 
-        <div class="card mt-4">
-            <div class="card-body">
-                <h5 class="card-title">Constraints Applied</h5>
-                <ul class="mb-0">
-                    <li>No teacher, class, or room double-booking</li>
-                    <li>Teacher and room availability respected</li>
-                    <li>All curriculum hours satisfied</li>
-                    <li>Consecutive periods for practical subjects</li>
-                    <li>Room type and capacity matching</li>
-                    <li>Balanced teacher workload across days</li>
-                    <li>Difficult subjects scheduled early in the day</li>
-                    <li>Minimized idle gaps in teacher schedules</li>
-                </ul>
-            </div>
+        <div class="mb-4">
+          <h5>Prerequisites</h5>
+          <ul class="list-group">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Teacher-Subject Allocations
+              <span class="badge bg-primary rounded-pill"
+                >{{ total_allocations }}</span
+              >
+            </li>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Available Time Slots
+              <span class="badge bg-primary rounded-pill"
+                >{{ total_timeslots }}</span
+              >
+            </li>
+          </ul>
         </div>
+
+        {% if total_allocations == 0 %}
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle"></i>
+          No teacher-subject allocations found. Please allocate teachers to
+          classes first.
+        </div>
+        <a href="/admin/timetable/classgroup/" class="btn btn-secondary w-100">
+          Go to Class Management
+        </a>
+        {% else %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="time_limit" class="form-label"
+              >Solver Time Limit (seconds)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="time_limit"
+              name="time_limit"
+              value="60"
+              min="10"
+              max="300"
+            />
+            <small class="form-text text-muted">
+              Longer time limits may find better solutions but take more time.
+            </small>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-play-circle"></i> Generate Timetable
+          </button>
+        </form>
+
+        <div class="mt-4 text-center">
+          <small class="text-muted">
+            This process may take several minutes depending on complexity.
+          </small>
+        </div>
+        {% endif %}
+      </div>
     </div>
+
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Constraints Applied</h5>
+        <ul class="mb-0">
+          <li>No teacher, class, or room double-booking</li>
+          <li>Teacher and room availability respected</li>
+          <li>All curriculum hours satisfied</li>
+          <li>Consecutive periods for practical subjects</li>
+          <li>Room type and capacity matching</li>
+          <li>Balanced teacher workload across days</li>
+          <li>Difficult subjects scheduled early in the day</li>
+          <li>Minimized idle gaps in teacher schedules</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
